@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="css/index.css">
+    <title>Task Planner</title>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Add a New Task</h2>
+        <div class="task-input">
+            <input type="text" id="taskInput" placeholder="Enter your task...">
+            <button onclick="addTask()">Add Task</button>
+        </div>
+
+        <h2>Tasks</h2>
+        <ul class="task-list" id="taskList">
+            <!-- Tasks will be added here dynamically -->
+        </ul>
+
+        <div class="filter-buttons">
+            <button onclick="filterTasks('all')" class="active">All</button>
+            <button onclick="filterTasks('pending')">Pending</button>
+            <button onclick="filterTasks('completed')">Completed</button>
+        </div>
+    </div>
+
+    <script>
+        let tasks = [];
+
+
+        function addTask() {
+            const taskInput = document.getElementById('taskInput');
+            const taskText = taskInput.value;
+
+            if (taskText.trim() !== '') {
+                tasks.push({ text: taskText, completed: false });
+                taskInput.value = '';
+                renderTasks();
+            }
+        }
+
+        function toggleTask(index) {
+            tasks[index].completed = !tasks[index].completed;
+            renderTasks();
+        }
+
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            renderTasks();
+        }
+
+        function renderTasks(filter = 'all') {
+            console.log(tasks)
+            taskList = document.getElementById('taskList');
+            taskList.innerHTML = '';
+
+            tasks.forEach((task, index) => {
+                if (filter === 'all' || (filter === 'completed' && task.completed) || (filter === 'pending' && !task.completed)) {
+                    const li = document.createElement('li');
+                    console.log(li.classList)
+                    li.classList.add(task.completed ? 'completed' : 'pending');
+
+                    const taskText = document.createElement('span');
+                    taskText.textContent = task.text;
+                    taskText.onclick = () => toggleTask(index);
+                    li.appendChild(taskText);
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.onclick = () => deleteTask(index);
+                    li.appendChild(deleteButton);
+
+                    taskList.appendChild(li);
+                }
+            });
+        }
+
+        function filterTasks(filter) {
+            const buttons = document.querySelectorAll('.filter-buttons button');
+            buttons.forEach(button => button.classList.remove('active'));
+
+            document.querySelector(`button[onclick="filterTasks('${filter}')"]`).classList.add('active');
+            renderTasks(filter);
+        }
+    </script>
+    <script src="cordova.js"></script>
+    <script src="js/index.js"></script>
+</body>
+
+</html>
